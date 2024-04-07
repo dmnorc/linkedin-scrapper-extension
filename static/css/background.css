@@ -1,0 +1,28 @@
+.scrapper-buttons {
+    display: flex;
+    position: fixed;
+    top: 50%;
+    height: 40px;
+    right: 0;
+    z-index: 1000;
+    gap: 2px;
+    transform: rotate(90deg) translate(0, -150px);
+}
+
+.scrapper-buttons > button {
+    background-color: blue;
+    color: white;
+    font-weight: bold;
+    padding: 10px;
+    cursor: pointer;
+    border: none;
+}
+
+.scrapper-buttons > button:hover {
+    background-color: darkblue;
+}
+
+.scrapper-buttons > button[disabled] {
+    background-color: gray;
+    cursor: auto;
+}

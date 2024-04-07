@@ -1,0 +1,62 @@
+html, body {
+    height: 400px;
+    margin: 0;
+    text-align: center;
+}
+
+h1 {
+    margin: 0 0 10px 0;
+}
+
+label {
+    font-weight: bold;
+    font-size: 1.2em;
+    margin-bottom: 10px;
+    display: block;
+}
+
+#settings-page {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-width: 400px;
+}
+
+#settings-page > * {
+    width: 100%;
+}
+
+#settings {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+textarea {
+    min-height: 300px;
+}
+
+#settings-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#settings-wrapper > button {
+    background-color: blue;
+    color: white;
+    font-weight: bold;
+    padding: 10px;
+    cursor: pointer;
+    border: none;
+    width: 100%;
+}
+
+#settings-wrapper > button:hover {
+    background-color: darkblue;
+}
+
+#settings-wrapper > button[disabled] {
+    background-color: gray;
+}

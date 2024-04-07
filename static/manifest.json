@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "Linkedin Job Scraper",
+  "description": "Base Level Extension",
+  "version": "1.0",
+  "action": {
+    "default_popup": "settings.html"
+  },
+  "permissions": [
+    "storage"
+  ],
+  "content_scripts": [
+    {
+      "js": [
+        "js/background.js"
+      ],
+      "css": [
+        "css/background.css"
+      ],
+      "matches": [
+        "https://www.linkedin.com/jobs/search/*"
+      ]
+    }
+  ]
+}
