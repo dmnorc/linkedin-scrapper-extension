@@ -29,7 +29,7 @@ export function waitForElements(
 export function actionWrapper(
     button: HTMLElement,
     text: string,
-    action: () => Promise<void>,
+    action: () => Promise<void> | void,
 ) {
     return async () => {
         const innerText = button.innerText;

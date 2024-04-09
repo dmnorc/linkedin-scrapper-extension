@@ -1,172 +1,194 @@
-import { detect } from 'tinyld/light';
-import { waitForElements, actionWrapper, sleep } from './helpers';
-import { jobSelectors } from './constants';
+import { detect } from "tinyld/light";
+import { waitForElements, actionWrapper, sleep } from "./helpers";
+import { jobSelectors } from "./constants";
+import { isMatched } from "./filters";
+
+interface JobData {
+  jobId: string;
+  title: string;
+  place: string;
+  url: string;
+  isPromoted: boolean;
+  description?: string;
+  link: HTMLElement;
+  dismiss: HTMLElement;
+}
 
 (async () => {
-    await waitForElements(jobSelectors.container);
-    createButtons();
+  await waitForElements(jobSelectors.container);
+  createButtons();
 })().catch((e) => console.error(`[jobScrapper] ${e.message}`));
 
 // functions
 
 function createButtons() {
-    const buttonContainer = document.createElement('div');
-    buttonContainer.className = 'scrapper-buttons';
-    buttonContainer.appendChild(
-        createButton('Filter jobs', 'Filtering...', filterJobs),
-    );
-    buttonContainer.appendChild(
-        createButton('Remove skipped jobs', 'Removing...', removeSkippedJobs),
-    );
-    buttonContainer.appendChild(
-        createButton('Copy jobs', 'Copying...', copyJobs),
-    );
-    document.body.appendChild(buttonContainer);
+  const buttonContainer = document.createElement("div");
+  buttonContainer.className = "scrapper-buttons";
+  buttonContainer.appendChild(
+    createButton("Filter jobs", "Filtering...", filterJobs),
+  );
+  buttonContainer.appendChild(
+    createButton("Remove skipped jobs", "Removing...", removeSkippedJobs),
+  );
+  buttonContainer.appendChild(
+    createButton("Copy jobs", "Copying...", copyJobs),
+  );
+  document.body.appendChild(buttonContainer);
+}
+
+function createButton(
+  text: string,
+  onActionText: string,
+  action: () => Promise<void> | void,
+) {
+  const button = document.createElement("button");
+  button.innerText = text;
+  button.onclick = actionWrapper(button, onActionText, action);
+  return button;
 }
 
 async function filterJobs() {
-    const [container] = await waitForElements(jobSelectors.container);
+  await waitForElements(jobSelectors.container);
 
-    container.scrollTo(0, 0);
-
-    const data = [];
-    let index = 0;
-    while (index < 25) {
-        const jobData = await processJob(index);
-        if (jobData) data.push(jobData);
-        index++;
-    }
-    console.log('[jobScrapper]', data);
+  const data = [];
+  let index = 0;
+  while (index < 25) {
+    const jobData = await processJob(index);
+    if (jobData) data.push(jobData);
+    index++;
+  }
+  console.log("[jobScrapper] data:", data);
+  await goToNext();
 }
 
-async function processJob(index: number) {
-    const jobs = document.querySelectorAll(jobSelectors.job);
-    const job = jobs[index];
-    if (!job) {
-        console.log('[jobScrapper] no job found');
-        return;
-    }
-    job.scrollIntoView();
+async function processJob(index: number): Promise<JobData | null> {
+  const jobs = getJobs();
+  const job = jobs[index];
+  if (!job) {
+    console.log("[jobScrapper] no job found");
+    return null;
+  }
 
-    const jobId = job.getAttribute('data-job-id');
+  job.scrollIntoView();
+  await sleep(300);
 
-    if (isJobSkipped(job)) {
-        await sleep(100);
-        return;
-    }
+  if (isJobSkipped(job)) {
+    return null;
+  }
 
-    const place =
-        (job.querySelector(jobSelectors.place) as HTMLElement)?.innerText ?? '';
+  const data = getJobCommonProperties(job);
 
-    const dismissBtn = job.querySelector(jobSelectors.dismiss) as HTMLElement;
+  if (!(await isMatched(data.title))) {
+    await dismissJob(data, "not matched");
+    return null;
+  }
 
-    // open details
-    const link = job.querySelector(jobSelectors.link) as HTMLElement;
-    const title = link.getAttribute('aria-label') ?? '';
-    if (await excludeJob(title)) {
-        console.log(`[jobScrapper] skip: not frontend:`, title);
-        dismissBtn?.click();
-        await sleep(300);
-        return;
-    }
+  const description = await getJobDescription(job, data);
 
-    if (!job.attributes.getNamedItem('aria-current')) {
-        link.click();
-        await sleep(1000);
-    }
+  if (detect(description) !== "en") {
+    await dismissJob(data, "not english");
+    return null;
+  }
 
-    await waitForElements(
-        `${jobSelectors.descriptionContainer}[aria-label="${title}"]`,
-    );
-
-    const description = document.querySelector(
-        jobSelectors.description,
-    ) as HTMLElement;
-
-    if (detect(description.innerText) !== 'en') {
-        console.log('[jobScrapper] skip: not english:', title);
-        dismissBtn?.click();
-        await sleep(300);
-        return;
-    }
-
-    const isPromoted = !!Array.from(job.querySelectorAll('li')).find(
-        (e) => e.innerText === 'Promoted',
-    );
-
-    return {
-        title,
-        jobId,
-        place,
-        description: description.innerText,
-        isPromoted,
-        link: `https://www.linkedin.com/jobs/view/${jobId}/`,
-    };
-}
-
-async function excludeJob(titleStr: string) {
-    if (!titleStr) return true;
-    const { filters } = await chrome.storage.sync.get('filters');
-    for (const includeStr of filters.include) {
-        if (new RegExp(includeStr, 'ig').test(titleStr)) return false;
-    }
-    for (const excludeStr of filters.exclude) {
-        if (new RegExp(excludeStr, 'ig').test(titleStr)) return true;
-    }
-    return false;
+  return {
+    ...data,
+    description,
+  };
 }
 
 function isJobSkipped(job: Element) {
-    return (
-        (job.querySelector('.artdeco-entity-lockup__caption') as HTMLElement)
-            ?.innerText === 'We won’t show you this job again.'
-    );
+  return (
+    job.querySelector<HTMLElement>(jobSelectors.place)?.innerText ===
+    "We won’t show you this job again."
+  );
+}
+
+function getJobs(isOnlyActive = false) {
+  const jobs = Array.from(document.querySelectorAll(jobSelectors.job));
+  if (!isOnlyActive) {
+    return jobs;
+  }
+  return jobs.filter((job) => !isJobSkipped(job));
+}
+
+function getJobCommonProperties(job: Element): JobData {
+  const jobId = job.getAttribute("data-job-id")!;
+  const link = job.querySelector<HTMLElement>(jobSelectors.link)!;
+  const title = link.getAttribute("aria-label")!;
+  return {
+    jobId,
+    title,
+    link,
+    dismiss: job.querySelector<HTMLElement>(jobSelectors.dismiss)!,
+    place: job.querySelector<HTMLElement>(jobSelectors.place)!.innerText,
+    url: `https://www.linkedin.com/jobs/view/${jobId}/`,
+    isPromoted: !!Array.from(job.querySelectorAll("li")).find(
+      (e) => e.innerText === "Promoted",
+    ),
+  };
+}
+
+async function dismissJob(data: JobData, reason: string, wait = 300) {
+  console.log(`[jobScrapper] skip: ${reason}:`, data.title);
+  data.dismiss.click();
+  await sleep(wait);
+  return;
+}
+
+async function getJobDescription(
+  job: Element,
+  { link, title }: Pick<JobData, "title" | "link">,
+) {
+  if (!job.attributes.getNamedItem("aria-current")) {
+    link.click();
+    await sleep(1000);
+  }
+
+  await waitForElements(
+    `${jobSelectors.descriptionContainer}[aria-label="${title}"]`,
+  );
+
+  return document.querySelector<HTMLElement>(jobSelectors.description)!
+    .innerText;
 }
 
 async function copyJobs() {
-    await waitForElements('.jobs-search-results-list');
-    const jobs = document.querySelectorAll(`.job-card-container`);
-    const data = [];
-    for (const job of jobs) {
-        if (!isJobSkipped(job)) {
-            const jobId = job.getAttribute('data-job-id');
-            const link = job.querySelector(
-                'a.job-card-container__link',
-            ) as HTMLElement;
-            const title = link.getAttribute('aria-label') ?? '';
-            data.push({
-                title,
-                link: `https://www.linkedin.com/jobs/view/${jobId}/`,
-                dismiss: job.querySelector('.artdeco-button') as HTMLElement,
-            });
-        }
-    }
-    const toCopy = data
-        .map(({ title, link }) => `${title}: ${link}`)
-        .join('\n');
+  const jobs = getJobs(true);
+  const data: JobData[] = [];
+  for (const job of jobs) {
+    const jobData = getJobCommonProperties(job);
+    await dismissJob(jobData, "copied");
+    data.push(jobData);
+  }
 
-    console.log('[jobScrapper]', toCopy);
-    await navigator.clipboard.writeText(toCopy);
+  const toCopy = data.map(({ title, url }) => `${title}: ${url}`).join("\n");
+  await navigator.clipboard.writeText(toCopy);
+  console.log("[jobScrapper] copied:", toCopy);
 
-    for (const { dismiss } of data) {
-        dismiss?.click();
-        await sleep(300);
-    }
+  document
+    .querySelector<HTMLElement>(".scrapper-buttons > button:first-child")
+    ?.click();
 }
 
 function removeSkippedJobs() {
-    const jobs = document.querySelectorAll(`.job-card-container`);
-    for (const job of jobs) {
-        if (isJobSkipped(job)) {
-            job.remove();
-        }
-    }
+  const jobs = getJobs();
+  for (const job of jobs) {
+    isJobSkipped(job) && job.remove();
+  }
 }
 
-function createButton(text: string, onActionText: string, action: () => void) {
-    const button = document.createElement('button');
-    button.innerText = text;
-    // @ts-ignore
-    button.onclick = actionWrapper(button, onActionText, action);
-    return button;
+async function goToNext() {
+  await sleep(300);
+  removeSkippedJobs();
+  if (!getJobs().length) {
+    console.log("[jobScrapper] all jobs are skipped");
+    const nextPageButton = document
+      .querySelector(jobSelectors.currentPageButton)
+      ?.nextElementSibling?.querySelector("button");
+    if (nextPageButton) {
+      nextPageButton.click();
+      await sleep(1000);
+      await filterJobs();
+    }
+  }
 }

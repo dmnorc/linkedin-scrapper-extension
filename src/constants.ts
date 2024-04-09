@@ -6,4 +6,5 @@ export const jobSelectors = {
     link: 'a.job-card-container__link',
     descriptionContainer: '.jobs-search__job-details--container',
     description: '#job-details > span',
+    currentPageButton: '.artdeco-pagination__pages > li.selected',
 };
