@@ -69,6 +69,7 @@ async function processJob(index: number): Promise<JobData | null> {
     return null;
   }
 
+  // We have to scroll and wait because the job list is lazy loaded
   job.scrollIntoView();
   await sleep(300);
 
