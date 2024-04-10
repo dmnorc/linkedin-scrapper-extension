@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Linkedin Job Scraper",
-  "description": "Base Level Extension",
+  "description": "Helps to search jobs with additional filtering by regular expressions and save the results to clipboard.",
   "version": "0.2.0",
   "action": {
     "default_popup": "settings.html"
