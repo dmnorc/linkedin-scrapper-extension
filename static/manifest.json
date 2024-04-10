@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Linkedin Job Scraper",
   "description": "Base Level Extension",
-  "version": "1.0",
+  "version": "0.2.0",
   "action": {
     "default_popup": "settings.html"
   },
