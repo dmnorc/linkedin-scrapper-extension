@@ -1,7 +1,30 @@
 import { detect } from "tinyld/light";
 import { waitForElements, actionWrapper, sleep } from "./helpers";
 import { jobSelectors } from "./constants";
-import { isMatched } from "./filters";
+import { getFilters, isMatched } from "./filters";
+
+new MutationObserver(async (mutations) => {
+  for (const mutation of mutations) {
+    for (const node of mutation.addedNodes) {
+      if (!(node instanceof HTMLElement)) {
+        continue;
+      }
+      if (node.matches && node.matches(jobSelectors.container)) {
+        const filters = await getFilters();
+        if (filters.include.length) {
+          createButtons(node);
+          return mutations;
+        }
+      }
+    }
+  }
+  return mutations;
+}).observe(document, {
+  subtree: true,
+  childList: true,
+});
+
+// functions
 
 interface JobData {
   jobId: string;
@@ -14,14 +37,7 @@ interface JobData {
   dismiss: HTMLElement;
 }
 
-(async () => {
-  await waitForElements(jobSelectors.container);
-  createButtons();
-})().catch((e) => console.error(`[jobScrapper] ${e.message}`));
-
-// functions
-
-function createButtons() {
+function createButtons(element: HTMLElement) {
   const buttonContainer = document.createElement("div");
   buttonContainer.className = "scrapper-buttons";
   buttonContainer.appendChild(
@@ -33,7 +49,7 @@ function createButtons() {
   buttonContainer.appendChild(
     createButton("Copy jobs", "Copying...", copyJobs),
   );
-  document.body.appendChild(buttonContainer);
+  element.appendChild(buttonContainer);
 }
 
 function createButton(
@@ -48,7 +64,8 @@ function createButton(
 }
 
 async function filterJobs() {
-  await waitForElements(jobSelectors.container);
+  await removeSkippedJobs();
+  await sleep(500);
 
   const data = [];
   let index = 0;
@@ -171,17 +188,22 @@ async function copyJobs() {
     ?.click();
 }
 
-function removeSkippedJobs() {
+async function removeSkippedJobs() {
   const jobs = getJobs();
-  for (const job of jobs) {
-    isJobSkipped(job) && job.remove();
+  const skippedJobs = jobs.filter(isJobSkipped);
+  for (const job of skippedJobs) {
+    job.remove();
+  }
+  if (skippedJobs.length) {
+    await sleep(300);
+    await removeSkippedJobs();
   }
 }
 
 async function goToNext() {
   await sleep(300);
-  removeSkippedJobs();
-  if (!getJobs().length) {
+  await removeSkippedJobs();
+  if (!getJobs(true).length) {
     console.log("[jobScrapper] all jobs are skipped");
     const nextPageButton = document
       .querySelector(jobSelectors.currentPageButton)
