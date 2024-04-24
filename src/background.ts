@@ -162,6 +162,8 @@ async function getJobDescription(
     await sleep(1000);
   }
 
+  console.log("[jobScrapper] getting description:", title);
+
   await waitForElements(
     `${jobSelectors.descriptionContainer}[aria-label="${title}"]`,
   );

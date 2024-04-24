@@ -5,6 +5,6 @@ export const jobSelectors = {
   dismiss: ".artdeco-button",
   link: "a.job-card-container__link",
   descriptionContainer: ".jobs-search__job-details--container",
-  description: "#job-details > span",
+  description: "#job-details > div.mt4",
   currentPageButton: ".artdeco-pagination__pages > li.selected",
 };
