@@ -20,7 +20,7 @@ label {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    min-width: 400px;
+    min-width: 600px;
 }
 
 #settings-page > * {

@@ -1,7 +1,7 @@
 import { detect } from "tinyld/light";
 import { waitForElements, actionWrapper, sleep } from "./helpers";
 import { jobSelectors } from "./constants";
-import { getFilters, isMatched } from "./filters";
+import { getFilters, isHighlighted, isIncluded } from "./filters";
 
 new MutationObserver(async (mutations) => {
   for (const mutation of mutations) {
@@ -96,7 +96,7 @@ async function processJob(index: number): Promise<JobData | null> {
 
   const data = getJobCommonProperties(job);
 
-  if (!(await isMatched(data.title))) {
+  if (!(await isIncluded(data.title))) {
     await dismissJob(data, "not matched");
     return null;
   }
@@ -106,6 +106,11 @@ async function processJob(index: number): Promise<JobData | null> {
   if (detect(description) !== "en") {
     await dismissJob(data, "not english");
     return null;
+  }
+
+  if ((await isHighlighted(description)) || (await isHighlighted(data.title))) {
+    console.log("[jobScrapper] highlighted:", data.title);
+    job.style.backgroundColor = "#f6cb40";
   }
 
   return {
@@ -122,7 +127,9 @@ function isJobSkipped(job: Element) {
 }
 
 function getJobs(isOnlyActive = false) {
-  const jobs = Array.from(document.querySelectorAll(jobSelectors.job));
+  const jobs = Array.from(
+    document.querySelectorAll<HTMLElement>(jobSelectors.job),
+  );
   if (!isOnlyActive) {
     return jobs;
   }
