@@ -1,6 +1,6 @@
 {
   "name": "linkedin-scrapper-extension",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Extension to scrap linkedin jobs",
   "main": "src/background.ts",
   "scripts": {

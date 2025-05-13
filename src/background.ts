@@ -3,16 +3,20 @@ import { waitForElements, actionWrapper, sleep } from "./helpers";
 import { jobSelectors } from "./constants";
 import { getFilters, isHighlighted, isIncluded } from "./filters";
 
+let container: HTMLElement;
+
 new MutationObserver(async (mutations) => {
   for (const mutation of mutations) {
     for (const node of mutation.addedNodes) {
       if (!(node instanceof HTMLElement)) {
         continue;
       }
-      if (node.matches && node.matches(jobSelectors.container)) {
+      if (node.classList && node.classList.contains(jobSelectors.header)) {
+        console.log('[jobScrapper] initializing');
         const filters = await getFilters();
         if (filters.include.length) {
-          createButtons(node);
+          container = node.nextSibling!.nextSibling! as HTMLElement;
+          createButtons();
           return mutations;
         }
       }
@@ -37,7 +41,7 @@ interface JobData {
   dismiss: HTMLElement;
 }
 
-function createButtons(element: HTMLElement) {
+function createButtons() {
   const buttonContainer = document.createElement("div");
   buttonContainer.className = "scrapper-buttons";
   buttonContainer.appendChild(
@@ -49,7 +53,7 @@ function createButtons(element: HTMLElement) {
   buttonContainer.appendChild(
     createButton("Copy jobs", "Copying...", copyJobs),
   );
-  element.appendChild(buttonContainer);
+  container.appendChild(buttonContainer);
 }
 
 function createButton(
@@ -128,7 +132,7 @@ function isJobSkipped(job: Element) {
 
 function getJobs(isOnlyActive = false) {
   const jobs = Array.from(
-    document.querySelectorAll<HTMLElement>(jobSelectors.job),
+    container.querySelectorAll<HTMLElement>(jobSelectors.job),
   );
   if (!isOnlyActive) {
     return jobs;
@@ -139,7 +143,7 @@ function getJobs(isOnlyActive = false) {
 function getJobCommonProperties(job: Element): JobData {
   const jobId = job.getAttribute("data-job-id")!;
   const link = job.querySelector<HTMLElement>(jobSelectors.link)!;
-  const title = link.getAttribute("aria-label")!;
+  const title = link.querySelector<HTMLElement>("strong")!.innerText;
   return {
     jobId,
     title,
@@ -164,7 +168,7 @@ async function getJobDescription(
   job: Element,
   { link, title }: Pick<JobData, "title" | "link">,
 ) {
-  if (!job.attributes.getNamedItem("aria-current")) {
+  if (!job.classList.contains(jobSelectors.current)) {
     link.click();
     await sleep(1000);
   }
@@ -172,7 +176,7 @@ async function getJobDescription(
   console.log("[jobScrapper] getting description:", title);
 
   await waitForElements(
-    `${jobSelectors.descriptionContainer}[aria-label="${title}"]`,
+    `${jobSelectors.descriptionContainer}[aria-label*="${title}"]`,
   );
 
   return document.querySelector<HTMLElement>(jobSelectors.description)!

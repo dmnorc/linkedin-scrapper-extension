@@ -1,8 +1,9 @@
 export const jobSelectors = {
-  container: ".jobs-search-results-list",
-  job: ".jobs-search-results-list > ul .job-card-container",
+  header: "jobs-search-results-list__header",
+  current: 'jobs-search-results-list__list-item--active',
+  job: ".job-card-container",
   place: ".artdeco-entity-lockup__caption",
-  dismiss: ".artdeco-button",
+  dismiss: ".artdeco-button--2",
   link: "a.job-card-container__link",
   descriptionContainer: ".jobs-search__job-details--container",
   description: "#job-details > div.mt4",
