@@ -111,7 +111,7 @@ async function processJob(index: number): Promise<JobData | null> {
 
   const description = await getJobDescription(job, data);
 
-  if (await isLanguageIncludes(description)) {
+  if (!(await isLanguageIncludes(description))) {
     await dismissJob(data, "language is not in allowed set");
     return null;
   }
