@@ -1,70 +1,79 @@
-html,
 body {
-  height: 400px;
-  margin: 0;
-  text-align: center;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  margin: 16px;
+  padding: 0;
+  background: #f9f9f9;
+  color: #333;
+}
+
+#settings-page {
+  max-width: 500px;
+  min-width: 300px;
+  margin: 0 auto;
+  background: #fff;
+  padding: 16px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
 h1 {
-  margin: 0 0 10px 0;
+  font-size: 18px;
+  margin-bottom: 12px;
+}
+
+h2 {
+  font-size: 16px;
+  margin: 16px 0 8px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 4px;
+}
+
+.settings-wrapper {
+  margin-bottom: 12px;
+}
+
+.settings {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.settings div {
+  display: flex;
+  flex-direction: column;
 }
 
 label {
   font-weight: bold;
-  font-size: 1.2em;
-  margin-bottom: 10px;
-  display: block;
+  margin-bottom: 4px;
 }
 
-#settings-page {
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  min-width: 600px;
-}
-
-#settings-page > * {
-  width: 100%;
-}
-
-#settings {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+textarea,
+input {
+  font-size: 13px;
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  resize: vertical;
 }
 
 textarea {
-  min-height: 300px;
+  min-height: 60px;
 }
 
-#languages-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-#settings-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-#settings-wrapper > button {
-  background-color: blue;
-  color: white;
+#save {
+  margin-top: 16px;
+  padding: 8px 16px;
   font-weight: bold;
-  padding: 10px;
-  cursor: pointer;
+  background-color: #0073b1;
+  color: #fff;
   border: none;
-  width: 100%;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
-#settings-wrapper > button:hover {
-  background-color: darkblue;
-}
-
-#settings-wrapper > button[disabled] {
-  background-color: gray;
+#save:hover {
+  background-color: #005e91;
 }

@@ -7,10 +7,7 @@
   <body>
     <div id="settings-page">
       <h1>LinkedIn Job Scrapper Settings</h1>
-      <div id="languages-wrapper">
-        <label for="languages">Allowed description language (e.g. en,nl)</label>
-        <input id="languages" placeholder="Allowed Languages" />
-      </div>
+      <h2>Title settings</h2>
       <div id="settings-wrapper">
         <div id="settings">
           <div>
@@ -27,6 +24,17 @@
               placeholder="Regexp for exclude jobs"
             ></textarea>
           </div>
+        </div>
+      </div>
+      <h2>Description filter settings</h2>
+      <div id="settings-wrapper">
+        <div id="settings">
+          <div id="languages-wrapper">
+            <label for="languages"
+              >Allowed description language (e.g. en,nl)</label
+            >
+            <input id="languages" placeholder="Allowed Languages" />
+          </div>
           <div>
             <label for="highlight">Highlight Job RegExps</label>
             <textarea
@@ -35,8 +43,8 @@
             ></textarea>
           </div>
         </div>
-        <button id="save" type="button">Save</button>
       </div>
+      <button id="save" type="button">Save</button>
     </div>
   </body>
   <script src="js/settings.js"></script>

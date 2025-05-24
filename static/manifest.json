@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Linkedin Job Scraper",
   "description": "Helps to search jobs with additional filtering by regular expressions and save the results to clipboard.",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "action": {
     "default_popup": "settings.html"
   },
