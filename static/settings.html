@@ -1,38 +1,43 @@
 <html lang="en">
-    <head>
-        <title>LinkedIn Job Scrapper Settings</title>
-        <link rel="stylesheet" href="css/styles.css" />
-    </head>
-    <body>
-        <div id="settings-page">
-            <h1>LinkedIn Job Scrapper Settings</h1>
-            <div id="settings-wrapper">
-                <div id="settings">
-                    <div>
-                        <label for="include">Include Job RegExps</label>
-                        <textarea
-                            id="include"
-                            placeholder="Regexp for include jobs (comma separated)"
-                        ></textarea>
-                    </div>
-                    <div>
-                        <label for="exclude">Exclude Job RegExps</label>
-                        <textarea
-                            id="exclude"
-                            placeholder="Regexp for exclude jobs"
-                        ></textarea>
-                    </div>
-                    <div>
-                        <label for="highlight">Highlight Job RegExps</label>
-                        <textarea
-                                id="highlight"
-                                placeholder="Regexp for highlighting jobs"
-                        ></textarea>
-                    </div>
-                </div>
-                <button id="save" type="button">Save</button>
-            </div>
+  <head>
+    <meta charset="UTF-8" />
+    <title>LinkedIn Job Scrapper Settings</title>
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <div id="settings-page">
+      <h1>LinkedIn Job Scrapper Settings</h1>
+      <div id="languages-wrapper">
+        <label for="languages">Allowed description language (e.g. en,nl)</label>
+        <input id="languages" placeholder="Allowed Languages" />
+      </div>
+      <div id="settings-wrapper">
+        <div id="settings">
+          <div>
+            <label for="include">Include Job RegExps</label>
+            <textarea
+              id="include"
+              placeholder="Regexp for include jobs (comma separated)"
+            ></textarea>
+          </div>
+          <div>
+            <label for="exclude">Exclude Job RegExps</label>
+            <textarea
+              id="exclude"
+              placeholder="Regexp for exclude jobs"
+            ></textarea>
+          </div>
+          <div>
+            <label for="highlight">Highlight Job RegExps</label>
+            <textarea
+              id="highlight"
+              placeholder="Regexp for highlighting jobs"
+            ></textarea>
+          </div>
         </div>
-    </body>
-    <script src="js/settings.js"></script>
+        <button id="save" type="button">Save</button>
+      </div>
+    </div>
+  </body>
+  <script src="js/settings.js"></script>
 </html>

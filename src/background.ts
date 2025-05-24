@@ -1,7 +1,11 @@
-import { detect } from "tinyld/light";
 import { waitForElements, actionWrapper, sleep } from "./helpers";
 import { jobSelectors } from "./constants";
-import { getFilters, isHighlighted, isIncluded } from "./filters";
+import {
+  getFilters,
+  isHighlighted,
+  isIncluded,
+  isLanguageIncludes,
+} from "./filters";
 
 let container: HTMLElement;
 
@@ -12,7 +16,7 @@ new MutationObserver(async (mutations) => {
         continue;
       }
       if (node.classList && node.classList.contains(jobSelectors.header)) {
-        console.log('[jobScrapper] initializing');
+        console.log("[jobScrapper] initializing");
         const filters = await getFilters();
         if (filters.include.length) {
           container = node.nextSibling!.nextSibling! as HTMLElement;
@@ -45,13 +49,13 @@ function createButtons() {
   const buttonContainer = document.createElement("div");
   buttonContainer.className = "scrapper-buttons";
   buttonContainer.appendChild(
-    createButton("Filter jobs", "Filtering...", filterJobs),
+    createButton("Filter jobs", "Filtering...", filterJobs)
   );
   buttonContainer.appendChild(
-    createButton("Remove skipped jobs", "Removing...", removeSkippedJobs),
+    createButton("Remove skipped jobs", "Removing...", removeSkippedJobs)
   );
   buttonContainer.appendChild(
-    createButton("Copy jobs", "Copying...", copyJobs),
+    createButton("Copy jobs", "Copying...", copyJobs)
   );
   container.appendChild(buttonContainer);
 }
@@ -59,7 +63,7 @@ function createButtons() {
 function createButton(
   text: string,
   onActionText: string,
-  action: () => Promise<void> | void,
+  action: () => Promise<void> | void
 ) {
   const button = document.createElement("button");
   button.innerText = text;
@@ -107,8 +111,8 @@ async function processJob(index: number): Promise<JobData | null> {
 
   const description = await getJobDescription(job, data);
 
-  if (detect(description) !== "en") {
-    await dismissJob(data, "not english");
+  if (await isLanguageIncludes(description)) {
+    await dismissJob(data, "language is not in allowed set");
     return null;
   }
 
@@ -132,7 +136,7 @@ function isJobSkipped(job: Element) {
 
 function getJobs(isOnlyActive = false) {
   const jobs = Array.from(
-    container.querySelectorAll<HTMLElement>(jobSelectors.job),
+    container.querySelectorAll<HTMLElement>(jobSelectors.job)
   );
   if (!isOnlyActive) {
     return jobs;
@@ -152,7 +156,7 @@ function getJobCommonProperties(job: Element): JobData {
     place: job.querySelector<HTMLElement>(jobSelectors.place)!.innerText,
     url: `https://www.linkedin.com/jobs/view/${jobId}/`,
     isPromoted: !!Array.from(job.querySelectorAll("li")).find(
-      (e) => e.innerText === "Promoted",
+      (e) => e.innerText === "Promoted"
     ),
   };
 }
@@ -166,7 +170,7 @@ async function dismissJob(data: JobData, reason: string, wait = 300) {
 
 async function getJobDescription(
   job: Element,
-  { link, title }: Pick<JobData, "title" | "link">,
+  { link, title }: Pick<JobData, "title" | "link">
 ) {
   if (!job.classList.contains(jobSelectors.current)) {
     link.click();
@@ -176,7 +180,7 @@ async function getJobDescription(
   console.log("[jobScrapper] getting description:", title);
 
   await waitForElements(
-    `${jobSelectors.descriptionContainer}[aria-label*="${title}"]`,
+    `${jobSelectors.descriptionContainer}[aria-label*="${title}"]`
   );
 
   return document.querySelector<HTMLElement>(jobSelectors.description)!

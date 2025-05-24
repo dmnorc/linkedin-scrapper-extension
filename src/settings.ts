@@ -11,15 +11,19 @@ window.onload = async () => {
   exclude.value = filters.exclude?.join("\n") ?? "";
   const highlight = document.querySelector("#highlight") as HTMLInputElement;
   highlight.value = filters.highlight?.join("\n") ?? "";
+  const languages = document.querySelector("#languages") as HTMLInputElement;
+  languages.value = filters.languages?.join(",") ?? "";
 };
 
 async function onSave() {
   const include = document.querySelector("#include") as HTMLInputElement;
   const exclude = document.querySelector("#exclude") as HTMLInputElement;
   const highlight = document.querySelector("#highlight") as HTMLInputElement;
+  const languages = document.querySelector("#languages") as HTMLInputElement;
   await saveFilters({
     include: include ? include.value.split("\n") : [],
     exclude: exclude ? exclude.value.split("\n") : [],
     highlight: highlight ? highlight.value.split("\n") : [],
+    languages: languages ? languages.value.split(",") : [],
   });
 }
