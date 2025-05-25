@@ -49,13 +49,13 @@ function createButtons() {
   const buttonContainer = document.createElement("div");
   buttonContainer.className = "scrapper-buttons";
   buttonContainer.appendChild(
-    createButton("Filter jobs", "Filtering...", filterJobs)
+    createButton("Filter jobs", "Filtering...", filterJobs),
   );
   buttonContainer.appendChild(
-    createButton("Remove skipped jobs", "Removing...", removeSkippedJobs)
+    createButton("Remove skipped jobs", "Removing...", removeSkippedJobs),
   );
   buttonContainer.appendChild(
-    createButton("Copy jobs", "Copying...", copyJobs)
+    createButton("Copy jobs", "Copying...", copyJobs),
   );
   container.appendChild(buttonContainer);
 }
@@ -63,7 +63,7 @@ function createButtons() {
 function createButton(
   text: string,
   onActionText: string,
-  action: () => Promise<void> | void
+  action: () => Promise<void> | void,
 ) {
   const button = document.createElement("button");
   button.innerText = text;
@@ -136,7 +136,7 @@ function isJobSkipped(job: Element) {
 
 function getJobs(isOnlyActive = false) {
   const jobs = Array.from(
-    container.querySelectorAll<HTMLElement>(jobSelectors.job)
+    container.querySelectorAll<HTMLElement>(jobSelectors.job),
   );
   if (!isOnlyActive) {
     return jobs;
@@ -156,7 +156,7 @@ function getJobCommonProperties(job: Element): JobData {
     place: job.querySelector<HTMLElement>(jobSelectors.place)!.innerText,
     url: `https://www.linkedin.com/jobs/view/${jobId}/`,
     isPromoted: !!Array.from(job.querySelectorAll("li")).find(
-      (e) => e.innerText === "Promoted"
+      (e) => e.innerText === "Promoted",
     ),
   };
 }
@@ -170,17 +170,17 @@ async function dismissJob(data: JobData, reason: string, wait = 300) {
 
 async function getJobDescription(
   job: Element,
-  { link, title }: Pick<JobData, "title" | "link">
+  { link, jobId }: Pick<JobData, "link" | "jobId">,
 ) {
   if (!job.classList.contains(jobSelectors.current)) {
     link.click();
     await sleep(1000);
   }
 
-  console.log("[jobScrapper] getting description:", title);
+  console.log("[jobScrapper] getting description:", jobId);
 
   await waitForElements(
-    `${jobSelectors.descriptionContainer}[aria-label*="${title}"]`
+    `${jobSelectors.descriptionContainer}[href^="/jobs/view/${jobId}"]`,
   );
 
   return document.querySelector<HTMLElement>(jobSelectors.description)!

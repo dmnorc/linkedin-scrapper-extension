@@ -5,7 +5,7 @@ export const jobSelectors = {
   place: ".artdeco-entity-lockup__caption",
   dismiss: ".artdeco-button--2",
   link: "a.job-card-container__link",
-  descriptionContainer: ".jobs-search__job-details--container",
+  descriptionContainer: ".jobs-search__job-details--container a",
   description: "#job-details > div.mt4",
   currentPageButton: ".artdeco-pagination__pages > li.selected",
 };
