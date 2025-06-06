@@ -5,11 +5,11 @@
     <link rel="stylesheet" href="css/styles.css" />
   </head>
   <body>
-    <div id="settings-page">
+    <div class="settings-page">
       <h1>LinkedIn Job Scrapper Settings</h1>
       <h2>Title settings</h2>
-      <div id="settings-wrapper">
-        <div id="settings">
+      <div class="settings-wrapper">
+        <div class="settings">
           <div>
             <label for="include">Include Job RegExps</label>
             <textarea
@@ -27,9 +27,9 @@
         </div>
       </div>
       <h2>Description filter settings</h2>
-      <div id="settings-wrapper">
-        <div id="settings">
-          <div id="languages-wrapper">
+      <div class="settings-wrapper">
+        <div class="settings">
+          <div class="languages-wrapper">
             <label for="languages"
               >Allowed description language (e.g. en,nl)</label
             >
@@ -41,6 +41,14 @@
               id="highlight"
               placeholder="Regexp for highlighting jobs"
             ></textarea>
+          </div>
+          <div>
+            <label for="pages">Max pages</label>
+            <input
+              id="pages"
+              placeholder="Max pages to look for jobs"
+              type="number"
+            />
           </div>
         </div>
       </div>

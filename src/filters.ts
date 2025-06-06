@@ -5,6 +5,7 @@ interface Filters {
   exclude: string[];
   highlight: string[];
   languages: string[];
+  maxPages: number;
 }
 
 export function saveFilters(filters: Filters) {
@@ -22,13 +23,13 @@ export async function isIncluded(str?: string): Promise<boolean> {
   if (!str) return false;
   const filters = await getFilters();
   const isInclude = filters.include.some((includeStr) =>
-    new RegExp(includeStr, "ig").test(str)
+    new RegExp(includeStr, "ig").test(str),
   );
 
   return (
     isInclude &&
     !filters.exclude.some((excludeStr) =>
-      new RegExp(excludeStr, "ig").test(str)
+      new RegExp(excludeStr, "ig").test(str),
     )
   );
 }
@@ -46,6 +47,6 @@ export async function isHighlighted(str?: string): Promise<boolean> {
   const filters = await getFilters();
 
   return filters.highlight.some((includeStr) =>
-    new RegExp(includeStr, "ig").test(str)
+    new RegExp(includeStr, "ig").test(str),
   );
 }

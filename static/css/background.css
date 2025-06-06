@@ -10,8 +10,8 @@
 }
 
 .scrapper-buttons > button {
-    background-color: blue;
-    color: white;
+    background-color: var(--artdeco-button-primary-default-static-background-color);
+    color: var(--artdeco-button-primary-default-static-color);
     font-weight: bold;
     padding: 10px;
     cursor: pointer;
@@ -19,7 +19,8 @@
 }
 
 .scrapper-buttons > button:hover {
-    background-color: darkblue;
+    background-color: var(--artdeco-button-primary-default-hover-background-color);
+    color: var(--artdeco-button-primary-default-hover-color);
 }
 
 .scrapper-buttons > button[disabled] {

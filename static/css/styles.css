@@ -1,26 +1,25 @@
 body {
   font-family: Arial, sans-serif;
   font-size: 14px;
-  margin: 16px;
   padding: 0;
   background: #f9f9f9;
   color: #333;
 }
 
-#settings-page {
+.settings-page {
   max-width: 500px;
   min-width: 300px;
   margin: 0 auto;
   background: #fff;
   padding: 16px;
   border: 1px solid #ddd;
-  border-radius: 8px;
+  border-radius: 4px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
 h1 {
   font-size: 18px;
-  margin-bottom: 12px;
+  margin: 5px 0;
 }
 
 h2 {
@@ -64,7 +63,6 @@ textarea {
 }
 
 #save {
-  margin-top: 16px;
   padding: 8px 16px;
   font-weight: bold;
   background-color: #0073b1;

@@ -222,13 +222,22 @@ async function goToNext() {
   await removeSkippedJobs();
   if (!getJobs(true).length) {
     console.log("[jobScrapper] all jobs are skipped");
-    const nextPageButton = document
-      .querySelector(jobSelectors.currentPageButton)
-      ?.nextElementSibling?.querySelector("button");
-    if (nextPageButton) {
-      nextPageButton.click();
-      await sleep(1000);
-      await filterJobs();
+    const currentPageButton = document.querySelector<HTMLElement>(
+      jobSelectors.currentPageButton,
+    );
+    if (currentPageButton) {
+      const currentPage = parseInt(currentPageButton.innerText);
+      const filters = await getFilters();
+      console.log("[jobScrapper] currentPage:", currentPage);
+      const nextPageButton =
+        currentPageButton.parentElement?.nextElementSibling?.querySelector(
+          "button",
+        );
+      if (nextPageButton && currentPage < filters.maxPages) {
+        nextPageButton.click();
+        await sleep(1000);
+        await filterJobs();
+      }
     }
   }
 }
